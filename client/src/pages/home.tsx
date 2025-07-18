@@ -110,26 +110,29 @@ export default function Home() {
               <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center">
                 <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center relative">
                   {/* Plant Logo Design */}
-                  <svg className="w-16 h-16 text-white" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div className="relative">
                     {/* Main stem */}
-                    <path d="M32 12 L32 52" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                    <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-white rounded-full"></div>
+                    
+                    {/* Top leaves */}
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 w-3 h-3 bg-white rounded-full"></div>
                     
                     {/* Left leaves */}
-                    <path d="M32 20 Q22 15 18 22 Q22 29 32 24" fill="currentColor" fillOpacity="0.9"/>
-                    <path d="M32 28 Q20 23 16 30 Q20 37 32 32" fill="currentColor" fillOpacity="0.8"/>
-                    <path d="M32 36 Q24 31 20 38 Q24 45 32 40" fill="currentColor" fillOpacity="0.7"/>
+                    <div className="absolute top-2 left-2 w-4 h-2 bg-white rounded-full opacity-90 transform -rotate-45"></div>
+                    <div className="absolute top-4 left-1 w-5 h-2 bg-white rounded-full opacity-80 transform -rotate-45"></div>
+                    <div className="absolute top-6 left-2 w-4 h-2 bg-white rounded-full opacity-70 transform -rotate-45"></div>
                     
                     {/* Right leaves */}
-                    <path d="M32 18 Q42 13 46 20 Q42 27 32 22" fill="currentColor" fillOpacity="0.9"/>
-                    <path d="M32 26 Q44 21 48 28 Q44 35 32 30" fill="currentColor" fillOpacity="0.8"/>
-                    <path d="M32 34 Q40 29 44 36 Q40 43 32 38" fill="currentColor" fillOpacity="0.7"/>
-                    
-                    {/* Top leaf/bud */}
-                    <circle cx="32" cy="12" r="3" fill="currentColor"/>
+                    <div className="absolute top-1 right-2 w-4 h-2 bg-white rounded-full opacity-90 transform rotate-45"></div>
+                    <div className="absolute top-3 right-1 w-5 h-2 bg-white rounded-full opacity-80 transform rotate-45"></div>
+                    <div className="absolute top-5 right-2 w-4 h-2 bg-white rounded-full opacity-70 transform rotate-45"></div>
                     
                     {/* Root indication */}
-                    <path d="M30 52 Q28 56 26 54 M34 52 Q36 56 38 54" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1">
+                      <div className="w-0.5 h-2 bg-white rounded-full opacity-60 transform -rotate-12 absolute -left-1"></div>
+                      <div className="w-0.5 h-2 bg-white rounded-full opacity-60 transform rotate-12 absolute left-1"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
