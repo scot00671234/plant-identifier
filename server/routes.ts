@@ -235,31 +235,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Use a consistent price ID for the subscription
-      // In a real app, you'd create this price once in Stripe dashboard and use its ID
-      const PLANT_ID_PRICE_ID = 'price_plantid_premium_monthly';
+      // Create product and price for subscription
+      // First, try to find existing product
+      let product;
+      const products = await stripe.products.list({ limit: 10 });
+      const existingProduct = products.data.find(p => p.name === 'PlantID Premium');
       
-      // Try to find existing price, create if not found
-      let price;
-      try {
-        price = await stripe.prices.retrieve(PLANT_ID_PRICE_ID);
-      } catch (error) {
-        // Price doesn't exist, create it
-        const product = await stripe.products.create({
+      if (existingProduct) {
+        product = existingProduct;
+      } else {
+        product = await stripe.products.create({
           name: 'PlantID Premium',
           description: 'Unlimited plant identifications',
         });
-
-        price = await stripe.prices.create({
-          id: PLANT_ID_PRICE_ID,
-          currency: 'usd',
-          unit_amount: 499, // $4.99 per month
-          recurring: {
-            interval: 'month',
-          },
-          product: product.id,
-        });
       }
+
+      // Create a new price for this subscription
+      const price = await stripe.prices.create({
+        currency: 'usd',
+        unit_amount: 499, // $4.99 per month
+        recurring: {
+          interval: 'month',
+        },
+        product: product.id,
+      });
 
       // Create subscription
       const subscription = await stripe.subscriptions.create({

@@ -172,15 +172,7 @@ export default function Paywall() {
           </Card>
         )}
 
-        {/* Development Test Button */}
-        <div className="text-center">
-          <button 
-            onClick={handleTestPremium}
-            className="text-blue-600 hover:text-blue-800 transition-colors text-sm"
-          >
-            Test Premium (Development)
-          </button>
-        </div>
+
       </main>
     </div>
   );
