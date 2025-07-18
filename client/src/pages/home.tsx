@@ -108,31 +108,9 @@ export default function Home() {
           <div className="relative mb-8">
             <div className="w-32 h-32 bg-gradient-to-br from-plant-green to-plant-green-dark rounded-full flex items-center justify-center mx-auto shadow-lg shadow-plant-green/20">
               <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center">
-                <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center relative">
-                  {/* Plant Logo Design */}
-                  <div className="relative">
-                    {/* Main stem */}
-                    <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-white rounded-full"></div>
-                    
-                    {/* Top leaves */}
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 w-3 h-3 bg-white rounded-full"></div>
-                    
-                    {/* Left leaves */}
-                    <div className="absolute top-2 left-2 w-4 h-2 bg-white rounded-full opacity-90 transform -rotate-45"></div>
-                    <div className="absolute top-4 left-1 w-5 h-2 bg-white rounded-full opacity-80 transform -rotate-45"></div>
-                    <div className="absolute top-6 left-2 w-4 h-2 bg-white rounded-full opacity-70 transform -rotate-45"></div>
-                    
-                    {/* Right leaves */}
-                    <div className="absolute top-1 right-2 w-4 h-2 bg-white rounded-full opacity-90 transform rotate-45"></div>
-                    <div className="absolute top-3 right-1 w-5 h-2 bg-white rounded-full opacity-80 transform rotate-45"></div>
-                    <div className="absolute top-5 right-2 w-4 h-2 bg-white rounded-full opacity-70 transform rotate-45"></div>
-                    
-                    {/* Root indication */}
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1">
-                      <div className="w-0.5 h-2 bg-white rounded-full opacity-60 transform -rotate-12 absolute -left-1"></div>
-                      <div className="w-0.5 h-2 bg-white rounded-full opacity-60 transform rotate-12 absolute left-1"></div>
-                    </div>
-                  </div>
+                <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center">
+                  {/* Simple, clear plant icon */}
+                  <div className="text-white text-4xl font-bold">🌱</div>
                 </div>
               </div>
             </div>
