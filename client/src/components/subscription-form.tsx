@@ -40,11 +40,29 @@ export default function SubscriptionForm({ onSuccess }: SubscriptionFormProps) {
           variant: "destructive",
         });
       } else {
-        toast({
-          title: "Payment Successful!",
-          description: "You now have unlimited plant identifications!",
-        });
-        onSuccess();
+        // Payment successful, now update user's premium status
+        try {
+          const response = await apiRequest("POST", "/api/subscription-success", {
+            userId: getUserId(),
+          });
+          
+          if (response.ok) {
+            toast({
+              title: "Payment Successful!",
+              description: "You now have unlimited plant identifications!",
+            });
+            onSuccess();
+          } else {
+            throw new Error("Failed to update premium status");
+          }
+        } catch (updateError) {
+          console.error("Failed to update premium status:", updateError);
+          toast({
+            title: "Payment Processed",
+            description: "Payment successful, but there was an issue updating your account. Please contact support.",
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       toast({

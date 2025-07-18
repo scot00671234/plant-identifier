@@ -15,7 +15,7 @@ const identifyPlantSchema = z.object({
 let stripe: Stripe | null = null;
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-06-30.basil",
+    apiVersion: "2024-12-18.acacia",
   });
 }
 
@@ -300,14 +300,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Handle successful subscription
   app.post("/api/subscription-success", async (req, res) => {
     try {
-      const { userId, subscriptionId } = req.body;
+      const { userId } = req.body;
       
       if (!stripe) {
         return res.status(500).json({ error: "Stripe not configured" });
       }
 
+      // Get user's subscription ID from storage
+      const usage = await storage.getUserUsage(userId);
+      
+      if (!usage?.stripeSubscriptionId) {
+        return res.status(400).json({ error: "No subscription found for user" });
+      }
+
       // Verify subscription is active
-      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      const subscription = await stripe.subscriptions.retrieve(usage.stripeSubscriptionId);
       
       if (subscription.status === 'active') {
         // Update user to premium
