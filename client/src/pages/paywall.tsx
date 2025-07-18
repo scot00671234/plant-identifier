@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, Crown, Check } from "lucide-react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getUserId } from "@/lib/storage";
 import SubscriptionForm from "@/components/subscription-form";
 
@@ -61,7 +61,12 @@ export default function Paywall() {
     }
   };
 
-  const handleSubscriptionSuccess = () => {
+  const handleSubscriptionSuccess = async () => {
+    // Invalidate usage cache to immediately reflect premium status
+    await queryClient.invalidateQueries({ 
+      queryKey: ['/api/usage', getUserId()] 
+    });
+    
     setShowPaymentForm(false);
     setLocation('/');
   };

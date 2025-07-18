@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getUserId } from "@/lib/storage";
 
 interface SubscriptionFormProps {
@@ -47,6 +47,11 @@ export default function SubscriptionForm({ onSuccess }: SubscriptionFormProps) {
           });
           
           if (response.ok) {
+            // Immediately invalidate usage cache to refresh premium status across all pages
+            await queryClient.invalidateQueries({ 
+              queryKey: ['/api/usage', getUserId()] 
+            });
+            
             toast({
               title: "Payment Successful!",
               description: "You now have unlimited plant identifications!",
