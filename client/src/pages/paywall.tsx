@@ -26,14 +26,6 @@ export default function Paywall() {
     {
       title: "Priority AI Processing",
       description: "Access to our most advanced AI models for higher accuracy"
-    },
-    {
-      title: "Detailed Plant Care",
-      description: "Get comprehensive plant care guides and growing tips"
-    },
-    {
-      title: "History Backup",
-      description: "Never lose your plant identifications with cloud backup"
     }
   ];
 
@@ -180,18 +172,11 @@ export default function Paywall() {
           </Card>
         )}
 
-        {/* Alternative Options */}
-        <div className="text-center space-y-2">
-          <button 
-            onClick={handleRestorePurchases}
-            className="text-gray-600 hover:text-gray-900 transition-colors text-sm block mx-auto"
-          >
-            Restore Previous Purchase
-          </button>
-          {/* Development Test Button */}
+        {/* Development Test Button */}
+        <div className="text-center">
           <button 
             onClick={handleTestPremium}
-            className="text-blue-600 hover:text-blue-800 transition-colors text-sm block mx-auto"
+            className="text-blue-600 hover:text-blue-800 transition-colors text-sm"
           >
             Test Premium (Development)
           </button>
