@@ -69,7 +69,12 @@ export default function Home() {
         <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-plant-green to-plant-green-dark rounded-full flex items-center justify-center">
-              <Leaf className="h-5 w-5 text-white" />
+              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4 L12 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M12 7 Q7 5 5 8 Q7 11 12 9" fill="currentColor" fillOpacity="0.9"/>
+                <path d="M12 11 Q17 9 19 12 Q17 15 12 13" fill="currentColor" fillOpacity="0.8"/>
+                <circle cx="12" cy="4" r="1.5" fill="currentColor"/>
+              </svg>
             </div>
             <h1 className="text-2xl font-light text-gray-800">PlantID</h1>
           </div>
@@ -103,8 +108,28 @@ export default function Home() {
           <div className="relative mb-8">
             <div className="w-32 h-32 bg-gradient-to-br from-plant-green to-plant-green-dark rounded-full flex items-center justify-center mx-auto shadow-lg shadow-plant-green/20">
               <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center">
-                <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center">
-                  <Leaf className="h-12 w-12 text-white" />
+                <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center relative">
+                  {/* Plant Logo Design */}
+                  <svg className="w-16 h-16 text-white" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Main stem */}
+                    <path d="M32 12 L32 52" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                    
+                    {/* Left leaves */}
+                    <path d="M32 20 Q22 15 18 22 Q22 29 32 24" fill="currentColor" fillOpacity="0.9"/>
+                    <path d="M32 28 Q20 23 16 30 Q20 37 32 32" fill="currentColor" fillOpacity="0.8"/>
+                    <path d="M32 36 Q24 31 20 38 Q24 45 32 40" fill="currentColor" fillOpacity="0.7"/>
+                    
+                    {/* Right leaves */}
+                    <path d="M32 18 Q42 13 46 20 Q42 27 32 22" fill="currentColor" fillOpacity="0.9"/>
+                    <path d="M32 26 Q44 21 48 28 Q44 35 32 30" fill="currentColor" fillOpacity="0.8"/>
+                    <path d="M32 34 Q40 29 44 36 Q40 43 32 38" fill="currentColor" fillOpacity="0.7"/>
+                    
+                    {/* Top leaf/bud */}
+                    <circle cx="32" cy="12" r="3" fill="currentColor"/>
+                    
+                    {/* Root indication */}
+                    <path d="M30 52 Q28 56 26 54 M34 52 Q36 56 38 54" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
                 </div>
               </div>
             </div>
