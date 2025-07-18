@@ -20,8 +20,8 @@ export default function Paywall() {
 
   const features = [
     {
-      title: "100 Monthly Identifications",
-      description: "Generous monthly limit that resets every month - perfect for enthusiasts"
+      title: "Unlimited Identifications",
+      description: "Identify as many plants as you want - no daily or monthly limits"
     },
     {
       title: "Priority AI Processing",
@@ -75,6 +75,31 @@ export default function Paywall() {
     alert('Restore purchases functionality would check for existing subscriptions');
   };
 
+  const handleTestPremium = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/test-premium", {
+        userId: getUserId(),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Invalidate usage cache to immediately reflect premium status
+        await queryClient.invalidateQueries({ 
+          queryKey: ['/api/usage', getUserId()] 
+        });
+        
+        alert('Test premium activated!');
+        setLocation('/');
+      } else {
+        alert('Failed to activate test premium');
+      }
+    } catch (error) {
+      console.error("Test premium error:", error);
+      alert("Failed to activate test premium");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-plant-green-ultra-light to-white pb-20">
       {/* Header */}
@@ -107,7 +132,7 @@ export default function Paywall() {
             Upgrade to Premium
           </h2>
           <p className="text-gray-500 text-lg font-light leading-relaxed">
-            You've used all 3 free identifications. Get 100 monthly identifications with premium.
+            You've used all 3 free identifications. Get unlimited identifications with premium.
           </p>
         </div>
 
@@ -139,7 +164,7 @@ export default function Paywall() {
             >
               {isLoading ? "Creating subscription..." : "Subscribe Now"}
             </Button>
-            <p className="text-white/70 mt-4 font-light">100 monthly plant identifications</p>
+            <p className="text-white/70 mt-4 font-light">Unlimited plant identifications</p>
           </Card>
         ) : (
           <Card className="p-8 bg-white/70 border-0 shadow-sm rounded-2xl">
@@ -155,13 +180,20 @@ export default function Paywall() {
           </Card>
         )}
 
-        {/* Alternative Option */}
-        <div className="text-center">
+        {/* Alternative Options */}
+        <div className="text-center space-y-2">
           <button 
             onClick={handleRestorePurchases}
-            className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
+            className="text-gray-600 hover:text-gray-900 transition-colors text-sm block mx-auto"
           >
             Restore Previous Purchase
+          </button>
+          {/* Development Test Button */}
+          <button 
+            onClick={handleTestPremium}
+            className="text-blue-600 hover:text-blue-800 transition-colors text-sm block mx-auto"
+          >
+            Test Premium (Development)
           </button>
         </div>
       </main>

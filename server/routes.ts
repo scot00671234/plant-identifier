@@ -48,10 +48,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user has reached their limits
       if (storage.hasReachedLimit(usage)) {
         const message = usage.isPremium 
-          ? "You've reached your monthly limit of 100 plant identifications. Your limit will reset next month."
-          : "You have used all 3 free plant identifications. Upgrade to premium for 100 monthly identifications.";
+          ? "Premium users should have unlimited access. Please contact support."
+          : "You have used all 3 free plant identifications. Upgrade to premium for unlimited identifications.";
         return res.status(429).json({ 
-          error: usage.isPremium ? "Monthly limit reached" : "Free limit reached", 
+          error: usage.isPremium ? "Unexpected limit reached" : "Free limit reached", 
           message 
         });
       }
@@ -134,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isPremium: usage.isPremium,
         remainingFree: usage.isPremium ? null : Math.max(0, 3 - usage.totalCount),
         premiumMonthlyCount: usage.isPremium ? usage.premiumMonthlyCount : null,
-        premiumMonthlyLimit: usage.isPremium ? 100 : null,
+        premiumMonthlyLimit: usage.isPremium ? null : null, // Unlimited for premium
       });
     } catch (error) {
       console.error("Usage fetch error:", error);
@@ -142,11 +142,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test subscription endpoint for development
+  app.post("/api/test-premium", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+      }
+
+      // In development, allow bypassing Stripe for testing
+      let usage = await storage.getUserUsage(userId);
+      
+      if (!usage) {
+        usage = await storage.createUserUsage({
+          userId,
+          totalCount: 0,
+          isPremium: true, // Grant premium for testing
+        });
+      } else {
+        await storage.updateUserUsage(userId, { isPremium: true });
+      }
+
+      res.json({ 
+        success: true,
+        message: "Test premium activated!" 
+      });
+    } catch (error: any) {
+      console.error("Test premium error:", error);
+      res.status(500).json({ 
+        error: "Failed to activate test premium",
+        message: error.message 
+      });
+    }
+  });
+
   // Stripe subscription endpoints
   app.post("/api/create-subscription", async (req, res) => {
     try {
+      console.log("STRIPE_SECRET_KEY exists:", !!process.env.STRIPE_SECRET_KEY);
+      console.log("Stripe instance exists:", !!stripe);
+      
       if (!stripe) {
-        return res.status(500).json({ error: "Stripe not configured. Please add STRIPE_SECRET_KEY to environment variables." });
+        return res.status(500).json({ 
+          error: "Stripe not configured", 
+          message: "Please add STRIPE_SECRET_KEY to environment variables.",
+          debug: {
+            hasKey: !!process.env.STRIPE_SECRET_KEY,
+            hasInstance: !!stripe
+          }
+        });
       }
 
       const { userId } = req.body;
@@ -190,21 +235,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Create product first
-      const product = await stripe.products.create({
-        name: 'PlantID Premium',
-        description: 'Unlimited plant identifications',
-      });
+      // Use a consistent price ID for the subscription
+      // In a real app, you'd create this price once in Stripe dashboard and use its ID
+      const PLANT_ID_PRICE_ID = 'price_plantid_premium_monthly';
+      
+      // Try to find existing price, create if not found
+      let price;
+      try {
+        price = await stripe.prices.retrieve(PLANT_ID_PRICE_ID);
+      } catch (error) {
+        // Price doesn't exist, create it
+        const product = await stripe.products.create({
+          name: 'PlantID Premium',
+          description: 'Unlimited plant identifications',
+        });
 
-      // Create price for the product
-      const price = await stripe.prices.create({
-        currency: 'usd',
-        unit_amount: 499, // $4.99 per month
-        recurring: {
-          interval: 'month',
-        },
-        product: product.id,
-      });
+        price = await stripe.prices.create({
+          id: PLANT_ID_PRICE_ID,
+          currency: 'usd',
+          unit_amount: 499, // $4.99 per month
+          recurring: {
+            interval: 'month',
+          },
+          product: product.id,
+        });
+      }
 
       // Create subscription
       const subscription = await stripe.subscriptions.create({
@@ -218,6 +273,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           save_default_payment_method: 'on_subscription',
         },
         expand: ['latest_invoice.payment_intent'],
+        metadata: {
+          userId: userId,
+          planType: 'premium_unlimited'
+        }
       });
 
       // Update user with subscription info

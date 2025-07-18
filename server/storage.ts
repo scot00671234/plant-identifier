@@ -124,13 +124,13 @@ export class MemStorage implements IStorage {
     });
   }
 
-  // Check if user has reached 3 total uses (free users) or monthly limit (premium users)
+  // Check if user has reached 3 total uses (free users), premium users get unlimited
   hasReachedLimit(usage: UserUsage): boolean {
     if (!usage.isPremium) {
       return usage.totalCount >= 3;
     }
-    // Premium users get 100 identifications per month
-    return (usage.premiumMonthlyCount || 0) >= 100;
+    // Premium users get unlimited identifications
+    return false;
   }
 }
 

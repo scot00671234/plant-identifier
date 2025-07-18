@@ -53,7 +53,7 @@ export default function SubscriptionForm({ onSuccess }: SubscriptionFormProps) {
             });
             
             toast({
-              title: "Payment Successful!",
+              title: "Welcome to Premium!",
               description: "You now have unlimited plant identifications!",
             });
             onSuccess();
