@@ -60,7 +60,7 @@ export default function Home() {
     );
   }
 
-  const canIdentify = usage?.isPremium || (usage?.remainingFree ?? 5) > 0;
+  const canIdentify = usage?.isPremium || (usage?.remainingFree ?? 3) > 0;
 
   return (
     <div className="pb-20">
@@ -70,7 +70,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-gray-900">PlantID</h1>
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-600">
-              Free: {usage?.remainingFree ?? 5}/5
+              Free: {usage?.remainingFree ?? 3}/3
             </span>
             <button 
               onClick={() => setLocation('/paywall')}

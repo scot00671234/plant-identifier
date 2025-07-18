@@ -54,7 +54,7 @@ export default function History() {
                 {usage?.dailyCount ?? 0}
               </div>
               <div className="text-sm text-gray-600">
-                of {usage?.isPremium ? '∞' : '5'} used
+                of {usage?.isPremium ? '∞' : '3'} used
               </div>
             </div>
           </div>

@@ -31,6 +31,11 @@ export class MemStorage implements IStorage {
       ...identification,
       id,
       createdAt: new Date(),
+      type: identification.type || null,
+      origin: identification.origin || null,
+      description: identification.description || null,
+      commonName: identification.commonName || null,
+      family: identification.family || null,
     };
     this.plantIdentifications.set(id, plant);
     return plant;
@@ -49,7 +54,12 @@ export class MemStorage implements IStorage {
 
   async createUserUsage(usage: InsertUserUsage): Promise<UserUsage> {
     const id = this.currentUsageId++;
-    const userUsage: UserUsage = { ...usage, id };
+    const userUsage: UserUsage = { 
+      ...usage, 
+      id,
+      dailyCount: usage.dailyCount || 0,
+      isPremium: usage.isPremium || false,
+    };
     this.userUsages.set(usage.userId, userUsage);
     return userUsage;
   }

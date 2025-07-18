@@ -19,10 +19,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const usage = await storage.getUserUsage(userId);
       const today = new Date().toISOString().split('T')[0];
       
-      if (usage && !usage.isPremium && usage.lastResetDate === today && usage.dailyCount >= 5) {
+      if (usage && !usage.isPremium && usage.lastResetDate === today && usage.dailyCount >= 3) {
         return res.status(429).json({ 
           error: "Daily limit reached", 
-          message: "You have reached your daily limit of 5 free identifications. Upgrade to premium for unlimited access." 
+          message: "You have reached your daily limit of 3 free identifications. Upgrade to premium for unlimited access." 
         });
       }
 
@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         usage: {
           dailyCount: updatedUsage.dailyCount,
           isPremium: updatedUsage.isPremium,
-          remainingFree: updatedUsage.isPremium ? null : Math.max(0, 5 - updatedUsage.dailyCount),
+          remainingFree: updatedUsage.isPremium ? null : Math.max(0, 3 - updatedUsage.dailyCount),
         },
       });
     } catch (error) {
@@ -114,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json({
           dailyCount: 0,
           isPremium: false,
-          remainingFree: 5,
+          remainingFree: 3,
         });
       }
 
@@ -124,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         dailyCount,
         isPremium: usage.isPremium,
-        remainingFree: usage.isPremium ? null : Math.max(0, 5 - dailyCount),
+        remainingFree: usage.isPremium ? null : Math.max(0, 3 - dailyCount),
       });
     } catch (error) {
       console.error("Usage fetch error:", error);
