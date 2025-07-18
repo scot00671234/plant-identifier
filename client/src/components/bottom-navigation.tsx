@@ -1,13 +1,18 @@
 import { useLocation } from "wouter";
 import { Home, History, Crown } from "lucide-react";
+import { useUsageTracker } from "@/hooks/use-usage-tracker";
 
 export default function BottomNavigation() {
   const [location, setLocation] = useLocation();
+  const { usage } = useUsageTracker();
+
+  const isPremium = usage?.isPremium;
+  const premiumPath = isPremium ? "/premium" : "/paywall";
 
   const navItems = [
     { path: "/", icon: Home, label: "Home" },
     { path: "/history", icon: History, label: "History" },
-    { path: "/paywall", icon: Crown, label: "Premium" },
+    { path: premiumPath, icon: Crown, label: "Premium" },
   ];
 
   return (
@@ -19,13 +24,13 @@ export default function BottomNavigation() {
               key={path}
               onClick={() => setLocation(path)}
               className={`flex-1 flex flex-col items-center py-3 transition-all duration-200 ${
-                location === path
+                location === path || (path === premiumPath && (location === "/premium" || location === "/paywall"))
                   ? "text-plant-green"
                   : "text-gray-400 hover:text-plant-green"
               }`}
             >
               <div className={`p-2 rounded-xl transition-all duration-200 ${
-                location === path
+                location === path || (path === premiumPath && (location === "/premium" || location === "/paywall"))
                   ? "bg-plant-green/10"
                   : "hover:bg-plant-green/5"
               }`}>

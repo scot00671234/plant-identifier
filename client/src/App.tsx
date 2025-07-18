@@ -7,6 +7,7 @@ import Home from "@/pages/home";
 import Results from "@/pages/results";
 import History from "@/pages/history";
 import Paywall from "@/pages/paywall";
+import Premium from "@/pages/premium";
 import NotFound from "@/pages/not-found";
 import BottomNavigation from "@/components/bottom-navigation";
 
@@ -18,6 +19,7 @@ function Router() {
         <Route path="/results" component={Results} />
         <Route path="/history" component={History} />
         <Route path="/paywall" component={Paywall} />
+        <Route path="/premium" component={Premium} />
         <Route component={NotFound} />
       </Switch>
       <BottomNavigation />
