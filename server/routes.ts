@@ -33,50 +33,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { imageBase64, userId } = identifyPlantSchema.parse(req.body);
       
-      // Check usage limits (considering trial period)
+      // Check usage limits 
       const usage = await storage.getUserUsage(userId);
-      const today = new Date().toISOString().split('T')[0];
       
       let hasAccess = false;
-      let isInTrial = false;
       
       if (!usage) {
-        // New user - they'll get trial access
+        // New user - they get 3 free uses
         hasAccess = true;
       } else if (usage.isPremium) {
         // Premium user - unlimited access
         hasAccess = true;
-      } else if (usage.trialStartDate && !usage.trialExpired) {
-        // Check if still in 5-day trial
-        const trialStart = new Date(usage.trialStartDate);
-        const now = new Date();
-        const diffTime = now.getTime() - trialStart.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays <= 5) {
-          isInTrial = true;
-          hasAccess = true;
-        } else {
-          // Trial expired, check daily limit
-          if (usage.lastResetDate === today && usage.dailyCount >= 3) {
-            hasAccess = false;
-          } else {
-            hasAccess = true;
-          }
-        }
+      } else if (usage.totalCount >= 3) {
+        // User has reached the 3 total limit
+        hasAccess = false;
       } else {
-        // No trial, check daily limit
-        if (usage.lastResetDate === today && usage.dailyCount >= 3) {
-          hasAccess = false;
-        } else {
-          hasAccess = true;
-        }
+        // User still has free uses remaining
+        hasAccess = true;
       }
       
       if (!hasAccess) {
         return res.status(429).json({ 
-          error: "Daily limit reached", 
-          message: "You have reached your daily limit of 3 free identifications. Upgrade to premium for unlimited access." 
+          error: "Free limit reached", 
+          message: "You have used all 3 free plant identifications. Upgrade to premium for unlimited access." 
         });
       }
 
@@ -182,17 +161,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Increment usage count
-      const updatedUsage = await storage.incrementDailyUsage(userId);
+      const updatedUsage = await storage.incrementTotalUsage(userId);
 
       res.json({
         identification,
         usage: {
-          dailyCount: updatedUsage.dailyCount,
+          totalCount: updatedUsage.totalCount,
           isPremium: updatedUsage.isPremium,
-          isInTrial: isInTrial,
-          trialDaysLeft: isInTrial && updatedUsage.trialStartDate ? 
-            Math.max(0, 5 - Math.ceil((new Date().getTime() - new Date(updatedUsage.trialStartDate).getTime()) / (1000 * 60 * 60 * 24))) : 0,
-          remainingFree: updatedUsage.isPremium ? null : Math.max(0, 3 - updatedUsage.dailyCount),
+          remainingFree: updatedUsage.isPremium ? null : Math.max(0, 3 - updatedUsage.totalCount),
         },
       });
     } catch (error) {
@@ -223,41 +199,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const usage = await storage.getUserUsage(userId);
       
       if (!usage) {
-        // Return default usage for new user (with trial)
+        // Return default usage for new user
         return res.json({
-          dailyCount: 0,
+          totalCount: 0,
           isPremium: false,
-          isInTrial: true,
-          trialDaysLeft: 5,
           remainingFree: 3,
         });
       }
-
-      const today = new Date().toISOString().split('T')[0];
-      const dailyCount = usage.lastResetDate === today ? usage.dailyCount : 0;
-      
-      // Check trial status
-      let isInTrial = false;
-      let trialDaysLeft = 0;
-      
-      if (usage.trialStartDate && !usage.trialExpired) {
-        const trialStart = new Date(usage.trialStartDate);
-        const now = new Date();
-        const diffTime = now.getTime() - trialStart.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays <= 5) {
-          isInTrial = true;
-          trialDaysLeft = Math.max(0, 5 - diffDays);
-        }
-      }
       
       res.json({
-        dailyCount,
+        totalCount: usage.totalCount,
         isPremium: usage.isPremium,
-        isInTrial,
-        trialDaysLeft,
-        remainingFree: usage.isPremium ? null : Math.max(0, 3 - dailyCount),
+        remainingFree: usage.isPremium ? null : Math.max(0, 3 - usage.totalCount),
       });
     } catch (error) {
       console.error("Usage fetch error:", error);

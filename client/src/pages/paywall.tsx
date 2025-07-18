@@ -21,7 +21,7 @@ export default function Paywall() {
   const features = [
     {
       title: "Unlimited Identifications",
-      description: "No daily limits - identify as many plants as you want"
+      description: "No limits - identify as many plants as you want"
     },
     {
       title: "Higher Accuracy",
@@ -96,7 +96,7 @@ export default function Paywall() {
             Unlock Unlimited Identifications
           </h2>
           <p className="text-gray-600">
-            Get instant access to unlimited plant identifications and premium features
+            You've used all 3 free identifications. Get unlimited access with premium.
           </p>
         </div>
 

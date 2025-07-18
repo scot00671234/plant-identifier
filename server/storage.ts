@@ -9,7 +9,7 @@ export interface IStorage {
   getUserUsage(userId: string): Promise<UserUsage | undefined>;
   createUserUsage(usage: InsertUserUsage): Promise<UserUsage>;
   updateUserUsage(userId: string, updates: Partial<UserUsage>): Promise<UserUsage>;
-  incrementDailyUsage(userId: string): Promise<UserUsage>;
+  incrementTotalUsage(userId: string): Promise<UserUsage>;
   updateStripeCustomerId(userId: string, customerId: string): Promise<UserUsage>;
   updateUserStripeInfo(userId: string, stripeInfo: { customerId: string; subscriptionId: string }): Promise<UserUsage>;
 }
@@ -59,10 +59,8 @@ export class MemStorage implements IStorage {
     const userUsage: UserUsage = { 
       ...usage, 
       id,
-      dailyCount: usage.dailyCount || 0,
+      totalCount: usage.totalCount || 0,
       isPremium: usage.isPremium || false,
-      trialStartDate: usage.trialStartDate || null,
-      trialExpired: usage.trialExpired || false,
       stripeCustomerId: usage.stripeCustomerId || null,
       stripeSubscriptionId: usage.stripeSubscriptionId || null,
     };
@@ -80,24 +78,20 @@ export class MemStorage implements IStorage {
     return updated;
   }
 
-  async incrementDailyUsage(userId: string): Promise<UserUsage> {
-    const today = new Date().toISOString().split('T')[0];
+  async incrementTotalUsage(userId: string): Promise<UserUsage> {
     let usage = await this.getUserUsage(userId);
     
     if (!usage) {
-      // Start trial for new user
-      usage = await this.startTrial(userId);
-      usage = await this.updateUserUsage(userId, { dailyCount: 1 });
-    } else if (usage.lastResetDate !== today) {
-      // Reset daily count for new day
-      usage = await this.updateUserUsage(userId, {
-        dailyCount: 1,
-        lastResetDate: today,
+      // Create new user record
+      usage = await this.createUserUsage({
+        userId,
+        totalCount: 1,
+        isPremium: false,
       });
     } else {
-      // Increment count for same day
+      // Increment total count
       usage = await this.updateUserUsage(userId, {
-        dailyCount: usage.dailyCount + 1,
+        totalCount: usage.totalCount + 1,
       });
     }
     
@@ -115,29 +109,9 @@ export class MemStorage implements IStorage {
     });
   }
 
-  // Check if user is in trial period (5 days)
-  isInTrialPeriod(usage: UserUsage): boolean {
-    if (!usage.trialStartDate || usage.trialExpired) return false;
-    
-    const trialStart = new Date(usage.trialStartDate);
-    const now = new Date();
-    const diffTime = now.getTime() - trialStart.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays <= 5;
-  }
-
-  // Start trial for new user
-  async startTrial(userId: string): Promise<UserUsage> {
-    const today = new Date().toISOString().split('T')[0];
-    return this.createUserUsage({
-      userId,
-      dailyCount: 0,
-      lastResetDate: today,
-      isPremium: false,
-      trialStartDate: today,
-      trialExpired: false,
-    });
+  // Check if user has reached 3 total uses
+  hasReachedFreeLimit(usage: UserUsage): boolean {
+    return !usage.isPremium && usage.totalCount >= 3;
   }
 }
 

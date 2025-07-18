@@ -93,3 +93,12 @@ Preferred communication style: Simple, everyday language.
 - **Deployment**: Push schema changes with `db:push` command
 
 The application follows a modern full-stack architecture with emphasis on type safety, developer experience, and mobile-first design principles.
+
+## Recent Changes
+
+### July 18, 2025 - Updated Paywall System
+- **Change**: Modified usage limits from 3 daily uses to 3 total uses
+- **Impact**: Users now have 3 free plant identifications for the entire app lifetime, not per day
+- **Database**: Updated schema to remove daily tracking and trial period functionality
+- **Client**: Updated UI to reflect new total usage limits
+- **Backend**: Simplified usage tracking logic to count total uses instead of daily resets

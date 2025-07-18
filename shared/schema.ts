@@ -19,11 +19,8 @@ export const plantIdentifications = pgTable("plant_identifications", {
 export const userUsage = pgTable("user_usage", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull().unique(),
-  dailyCount: integer("daily_count").default(0).notNull(),
-  lastResetDate: text("last_reset_date").notNull(), // YYYY-MM-DD format
+  totalCount: integer("total_count").default(0).notNull(),
   isPremium: boolean("is_premium").default(false).notNull(),
-  trialStartDate: text("trial_start_date"), // YYYY-MM-DD format
-  trialExpired: boolean("trial_expired").default(false).notNull(),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
 });

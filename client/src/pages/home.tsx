@@ -60,7 +60,7 @@ export default function Home() {
     );
   }
 
-  const canIdentify = usage?.isPremium || usage?.isInTrial || (usage?.remainingFree ?? 3) > 0;
+  const canIdentify = usage?.isPremium || (usage?.remainingFree ?? 3) > 0;
 
   return (
     <div className="pb-20">
@@ -74,13 +74,9 @@ export default function Home() {
                 <Crown className="h-4 w-4 mr-1" />
                 Premium
               </span>
-            ) : usage?.isInTrial ? (
-              <span className="text-sm text-blue-600">
-                Trial: {usage.trialDaysLeft} days left
-              </span>
             ) : (
               <span className="text-sm text-gray-600">
-                Free: {usage?.remainingFree ?? 3}/3
+                Free: {usage?.remainingFree ?? 3}/3 left
               </span>
             )}
             <button 
@@ -134,7 +130,7 @@ export default function Home() {
 
           {!canIdentify && (
             <p className="text-center text-sm text-red-600 mt-2">
-              Daily limit reached. <button 
+              You've used all 3 free identifications. <button 
                 onClick={() => setLocation('/paywall')}
                 className="text-plant-green hover:underline"
               >
