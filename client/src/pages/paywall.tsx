@@ -1,10 +1,22 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Crown, Check } from "lucide-react";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { apiRequest } from "@/lib/queryClient";
+import { getUserId } from "@/lib/storage";
+import SubscriptionForm from "@/components/subscription-form";
+
+// Initialize Stripe
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || "");
 
 export default function Paywall() {
   const [, setLocation] = useLocation();
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const features = [
     {
@@ -25,9 +37,33 @@ export default function Paywall() {
     }
   ];
 
-  const handleStartTrial = () => {
-    // Mock premium upgrade
-    alert('Premium upgrade functionality would be implemented here with real payment processing');
+  const handleStartTrial = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/create-subscription", {
+        userId: getUserId(),
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      
+      setClientSecret(data.clientSecret);
+      setShowPaymentForm(true);
+    } catch (error) {
+      console.error("Subscription creation error:", error);
+      alert("Failed to create subscription. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubscriptionSuccess = () => {
+    setShowPaymentForm(false);
+    setLocation('/');
   };
 
   const handleRestorePurchases = () => {
@@ -79,19 +115,34 @@ export default function Paywall() {
           ))}
         </div>
 
-        {/* Pricing Card */}
-        <Card className="bg-gradient-to-r from-plant-green to-plant-green-dark text-white p-6 text-center">
-          <h3 className="text-lg font-semibold mb-2">Premium Monthly</h3>
-          <div className="text-3xl font-bold mb-1">$4.99</div>
-          <p className="text-sm opacity-90 mb-4">per month</p>
-          <Button 
-            className="w-full bg-white text-plant-green font-semibold py-3 hover:bg-gray-50"
-            onClick={handleStartTrial}
-          >
-            Start Free Trial
-          </Button>
-          <p className="text-xs opacity-75 mt-2">7-day free trial, then $4.99/month</p>
-        </Card>
+        {/* Pricing Card or Payment Form */}
+        {!showPaymentForm ? (
+          <Card className="bg-gradient-to-r from-plant-green to-plant-green-dark text-white p-6 text-center">
+            <h3 className="text-lg font-semibold mb-2">Premium Monthly</h3>
+            <div className="text-3xl font-bold mb-1">$4.99</div>
+            <p className="text-sm opacity-90 mb-4">per month</p>
+            <Button 
+              className="w-full bg-white text-plant-green font-semibold py-3 hover:bg-gray-50"
+              onClick={handleStartTrial}
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating subscription..." : "Subscribe Now"}
+            </Button>
+            <p className="text-xs opacity-75 mt-2">Unlimited plant identifications</p>
+          </Card>
+        ) : (
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4 text-center">Complete Your Subscription</h3>
+            {clientSecret && (
+              <Elements
+                stripe={stripePromise}
+                options={{ clientSecret }}
+              >
+                <SubscriptionForm onSuccess={handleSubscriptionSuccess} />
+              </Elements>
+            )}
+          </Card>
+        )}
 
         {/* Alternative Option */}
         <div className="text-center">

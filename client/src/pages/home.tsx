@@ -60,7 +60,7 @@ export default function Home() {
     );
   }
 
-  const canIdentify = usage?.isPremium || (usage?.remainingFree ?? 3) > 0;
+  const canIdentify = usage?.isPremium || usage?.isInTrial || (usage?.remainingFree ?? 3) > 0;
 
   return (
     <div className="pb-20">
@@ -69,9 +69,20 @@ export default function Home() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">PlantID</h1>
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">
-              Free: {usage?.remainingFree ?? 3}/3
-            </span>
+            {usage?.isPremium ? (
+              <span className="text-sm text-yellow-600 flex items-center">
+                <Crown className="h-4 w-4 mr-1" />
+                Premium
+              </span>
+            ) : usage?.isInTrial ? (
+              <span className="text-sm text-blue-600">
+                Trial: {usage.trialDaysLeft} days left
+              </span>
+            ) : (
+              <span className="text-sm text-gray-600">
+                Free: {usage?.remainingFree ?? 3}/3
+              </span>
+            )}
             <button 
               onClick={() => setLocation('/paywall')}
               className="text-plant-green hover:text-plant-green-dark transition-colors"
