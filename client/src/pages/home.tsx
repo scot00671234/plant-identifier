@@ -48,7 +48,10 @@ export default function Home() {
   };
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen 
+      message="Loading AI Model..." 
+      subtitle="Initializing TensorFlow.js plant classification - this may take a moment on first use"
+    />;
   }
 
   if (showCamera) {

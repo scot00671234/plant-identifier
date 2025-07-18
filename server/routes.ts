@@ -28,10 +28,10 @@ if (process.env.OPENAI_API_KEY) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Plant identification endpoint
-  app.post("/api/identify-plant", async (req, res) => {
+  // Save plant identification result (TensorFlow.js does the actual classification)
+  app.post("/api/save-identification", async (req, res) => {
     try {
-      const { imageBase64, userId } = identifyPlantSchema.parse(req.body);
+      const { imageBase64, userId, scientificName, commonName, confidence, family, description, origin, type } = req.body;
       
       // Check usage limits 
       let usage = await storage.getUserUsage(userId);
@@ -56,93 +56,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Try plant identification using OpenAI Vision API as primary method
-      let plantData;
-      
-      try {
-        if (!openai) {
-          throw new Error("OpenAI not configured");
-        }
-        
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content: "You are a plant identification expert. Analyze the image and identify the plant species. Return only valid JSON with this exact format: {\"scientificName\": \"Genus species\", \"commonName\": \"Common name\", \"confidence\": 85, \"family\": \"Family name\", \"description\": \"Brief description\", \"origin\": \"Native region\", \"type\": \"Plant type\"}. If you cannot identify the plant, return an error object: {\"error\": \"Unable to identify plant\"}."
-            },
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: "Please identify this plant and provide the information in the specified JSON format."
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:image/jpeg;base64,${imageBase64}`
-                  }
-                }
-              ]
-            }
-          ],
-          max_tokens: 500,
-          response_format: { type: "json_object" }
-        });
-
-        const result = JSON.parse(response.choices[0].message.content || "{}");
-        
-        if (result.error) {
-          throw new Error(result.error);
-        }
-        
-        plantData = {
-          scientificName: result.scientificName || "Unknown species",
-          commonName: result.commonName || "Unknown plant",
-          confidence: result.confidence || 75,
-          family: result.family || "Unknown family",
-          description: result.description || "No description available",
-          origin: result.origin || "Unknown origin",
-          type: result.type || "Plant"
-        };
-        
-      } catch (error) {
-        console.error("OpenAI Vision API error:", error);
-        
-        // Fallback to mock data for demo purposes
-        const mockPlants = [
-          {
-            scientificName: "Rosa gallica",
-            commonName: "French Rose",
-            confidence: 78,
-            family: "Rosaceae",
-            description: "A beautiful flowering plant with fragrant blooms",
-            origin: "Europe",
-            type: "Flowering plant"
-          },
-          {
-            scientificName: "Ficus benjamina",
-            commonName: "Weeping Fig",
-            confidence: 82,
-            family: "Moraceae",
-            description: "A popular indoor houseplant with glossy leaves",
-            origin: "Asia",
-            type: "Tree"
-          },
-          {
-            scientificName: "Monstera deliciosa",
-            commonName: "Swiss Cheese Plant",
-            confidence: 85,
-            family: "Araceae",
-            description: "A tropical plant known for its distinctive split leaves",
-            origin: "Central America",
-            type: "Tropical plant"
-          }
-        ];
-        
-        plantData = mockPlants[Math.floor(Math.random() * mockPlants.length)];
-      }
+      // Plant data comes from TensorFlow.js client-side classification
+      const plantData = {
+        scientificName,
+        commonName,
+        confidence,
+        family,
+        description,
+        origin,
+        type
+      };
 
       // Save identification result
       const identification = await storage.createPlantIdentification({
@@ -171,9 +94,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       });
     } catch (error) {
-      console.error("Plant identification error:", error);
+      console.error("Plant identification save error:", error);
       res.status(500).json({ 
-        error: "Identification failed", 
+        error: "Failed to save identification", 
         message: error instanceof Error ? error.message : "An unexpected error occurred" 
       });
     }
