@@ -19,15 +19,15 @@ export default function Premium() {
 
   const features = [
     {
-      title: "Unlimited Identifications",
-      description: "No limits - identify as many plants as you want"
+      title: "100 Monthly Identifications",
+      description: "Generous monthly limit that resets every month - perfect for enthusiasts"
     },
     {
-      title: "Higher Accuracy",
-      description: "Access to our most advanced AI models for better results"
+      title: "Priority AI Processing",
+      description: "Access to our most advanced AI models for higher accuracy"
     },
     {
-      title: "Detailed Information",
+      title: "Detailed Plant Care",
       description: "Get comprehensive plant care guides and growing tips"
     },
     {
@@ -109,8 +109,25 @@ export default function Premium() {
             Premium Active
           </h2>
           <p className="text-gray-500 text-lg font-light leading-relaxed">
-            You have unlimited access to all plant identification features.
+            You have 100 monthly plant identifications and priority features.
           </p>
+          
+          {usage?.premiumMonthlyCount !== undefined && (
+            <div className="mt-6 p-4 bg-plant-green/10 rounded-2xl">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-plant-green">This Month</span>
+                <span className="text-sm font-medium text-plant-green">
+                  {usage.premiumMonthlyCount || 0} / 100
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-plant-green h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(((usage.premiumMonthlyCount || 0) / 100) * 100, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Subscription Details Card */}
@@ -173,7 +190,7 @@ export default function Premium() {
               <div>
                 <h3 className="font-medium text-red-800">Cancel Subscription?</h3>
                 <p className="text-sm text-red-600 mt-1">
-                  You'll lose access to unlimited plant identifications and premium features at the end of your current billing period.
+                  You'll lose access to 100 monthly plant identifications and premium features at the end of your current billing period.
                 </p>
               </div>
             </div>

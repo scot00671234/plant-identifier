@@ -61,6 +61,9 @@ export class MemStorage implements IStorage {
       id,
       totalCount: usage.totalCount || 0,
       isPremium: usage.isPremium || false,
+      remainingFree: usage.remainingFree || 3,
+      premiumMonthlyCount: usage.premiumMonthlyCount || 0,
+      premiumResetDate: usage.premiumResetDate || null,
       stripeCustomerId: usage.stripeCustomerId || null,
       stripeSubscriptionId: usage.stripeSubscriptionId || null,
     };
@@ -89,9 +92,21 @@ export class MemStorage implements IStorage {
         isPremium: false,
       });
     } else {
-      // Increment total count
+      const now = new Date();
+      const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      
+      // Reset premium monthly count if it's a new month
+      let premiumMonthlyCount = usage.premiumMonthlyCount || 0;
+      if (usage.premiumResetDate !== currentMonthKey) {
+        premiumMonthlyCount = 0;
+      }
+
+      // Increment total count and handle premium limits
       usage = await this.updateUserUsage(userId, {
         totalCount: usage.totalCount + 1,
+        remainingFree: usage.isPremium ? usage.remainingFree : Math.max(0, (usage.remainingFree || 3) - 1),
+        premiumMonthlyCount: usage.isPremium ? premiumMonthlyCount + 1 : premiumMonthlyCount,
+        premiumResetDate: usage.isPremium ? currentMonthKey : usage.premiumResetDate
       });
     }
     
@@ -109,9 +124,13 @@ export class MemStorage implements IStorage {
     });
   }
 
-  // Check if user has reached 3 total uses
-  hasReachedFreeLimit(usage: UserUsage): boolean {
-    return !usage.isPremium && usage.totalCount >= 3;
+  // Check if user has reached 3 total uses (free users) or monthly limit (premium users)
+  hasReachedLimit(usage: UserUsage): boolean {
+    if (!usage.isPremium) {
+      return usage.totalCount >= 3;
+    }
+    // Premium users get 100 identifications per month
+    return (usage.premiumMonthlyCount || 0) >= 100;
   }
 }
 

@@ -119,3 +119,12 @@ The application follows a modern full-stack architecture with emphasis on type s
 - **Real-time Updates**: Enhanced payment flow to immediately update premium status across all pages
 - **Cache Management**: Implemented query invalidation for instant UI updates after successful payment
 - **Security**: Maintained robust client/server separation and security practices
+
+### July 18, 2025 - Sustainable Premium Model Implementation
+- **Cost Analysis**: Researched Plant.id API pricing (€0.05 per identification) and competitor pricing models
+- **Pricing Strategy**: Updated from "unlimited" to 100 monthly identifications to manage API costs
+- **Competitive Research**: Analyzed PlantNet (free), PictureThis ($29.99/year), PlantSnap ($20/year)
+- **Premium Limits**: Implemented monthly usage tracking with 100 ID limit for premium users
+- **Cost Management**: Prevents unlimited API usage that could cost $50+ per heavy user per month
+- **User Experience**: Monthly limits reset automatically, providing generous allowance for enthusiasts
+- **Database Schema**: Added premiumMonthlyCount and premiumResetDate fields for tracking

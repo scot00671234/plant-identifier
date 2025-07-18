@@ -20,15 +20,15 @@ export default function Paywall() {
 
   const features = [
     {
-      title: "Unlimited Identifications",
-      description: "No limits - identify as many plants as you want"
+      title: "100 Monthly Identifications",
+      description: "Generous monthly limit that resets every month - perfect for enthusiasts"
     },
     {
-      title: "Higher Accuracy",
-      description: "Access to our most advanced AI models for better results"
+      title: "Priority AI Processing",
+      description: "Access to our most advanced AI models for higher accuracy"
     },
     {
-      title: "Detailed Information",
+      title: "Detailed Plant Care",
       description: "Get comprehensive plant care guides and growing tips"
     },
     {
@@ -104,10 +104,10 @@ export default function Paywall() {
           </div>
           
           <h2 className="text-3xl font-light text-gray-800 mb-3">
-            Unlock Unlimited Access
+            Upgrade to Premium
           </h2>
           <p className="text-gray-500 text-lg font-light leading-relaxed">
-            You've used all 3 free identifications. Get unlimited access with premium.
+            You've used all 3 free identifications. Get 100 monthly identifications with premium.
           </p>
         </div>
 
@@ -139,7 +139,7 @@ export default function Paywall() {
             >
               {isLoading ? "Creating subscription..." : "Subscribe Now"}
             </Button>
-            <p className="text-white/70 mt-4 font-light">Unlimited plant identifications</p>
+            <p className="text-white/70 mt-4 font-light">100 monthly plant identifications</p>
           </Card>
         ) : (
           <Card className="p-8 bg-white/70 border-0 shadow-sm rounded-2xl">

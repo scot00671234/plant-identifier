@@ -21,6 +21,9 @@ export const userUsage = pgTable("user_usage", {
   userId: text("user_id").notNull().unique(),
   totalCount: integer("total_count").default(0).notNull(),
   isPremium: boolean("is_premium").default(false).notNull(),
+  remainingFree: integer("remaining_free").default(3).notNull(),
+  premiumMonthlyCount: integer("premium_monthly_count").default(0).notNull(),
+  premiumResetDate: text("premium_reset_date"),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
 });

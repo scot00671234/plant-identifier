@@ -34,28 +34,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { imageBase64, userId } = identifyPlantSchema.parse(req.body);
       
       // Check usage limits 
-      const usage = await storage.getUserUsage(userId);
-      
-      let hasAccess = false;
+      let usage = await storage.getUserUsage(userId);
       
       if (!usage) {
-        // New user - they get 3 free uses
-        hasAccess = true;
-      } else if (usage.isPremium) {
-        // Premium user - unlimited access
-        hasAccess = true;
-      } else if (usage.totalCount >= 3) {
-        // User has reached the 3 total limit
-        hasAccess = false;
-      } else {
-        // User still has free uses remaining
-        hasAccess = true;
+        // Create new user record
+        usage = await storage.createUserUsage({
+          userId,
+          totalCount: 0,
+          isPremium: false,
+        });
       }
       
-      if (!hasAccess) {
+      // Check if user has reached their limits
+      if (storage.hasReachedLimit(usage)) {
+        const message = usage.isPremium 
+          ? "You've reached your monthly limit of 100 plant identifications. Your limit will reset next month."
+          : "You have used all 3 free plant identifications. Upgrade to premium for 100 monthly identifications.";
         return res.status(429).json({ 
-          error: "Free limit reached", 
-          message: "You have used all 3 free plant identifications. Upgrade to premium for unlimited access." 
+          error: usage.isPremium ? "Monthly limit reached" : "Free limit reached", 
+          message 
         });
       }
 
@@ -169,6 +166,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalCount: updatedUsage.totalCount,
           isPremium: updatedUsage.isPremium,
           remainingFree: updatedUsage.isPremium ? null : Math.max(0, 3 - updatedUsage.totalCount),
+          premiumMonthlyCount: updatedUsage.isPremium ? updatedUsage.premiumMonthlyCount : null,
+          premiumMonthlyLimit: updatedUsage.isPremium ? 100 : null,
         },
       });
     } catch (error) {
@@ -211,6 +210,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalCount: usage.totalCount,
         isPremium: usage.isPremium,
         remainingFree: usage.isPremium ? null : Math.max(0, 3 - usage.totalCount),
+        premiumMonthlyCount: usage.isPremium ? usage.premiumMonthlyCount : null,
+        premiumMonthlyLimit: usage.isPremium ? 100 : null,
       });
     } catch (error) {
       console.error("Usage fetch error:", error);
