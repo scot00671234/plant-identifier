@@ -63,60 +63,77 @@ export default function Home() {
   const canIdentify = usage?.isPremium || (usage?.remainingFree ?? 3) > 0;
 
   return (
-    <div className="pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-plant-green-ultra-light to-white pb-20">
       {/* Header */}
-      <header className="bg-white p-4 border-b border-gray-100">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">PlantID</h1>
-          <div className="flex items-center space-x-2">
+      <header className="glass-effect p-6 border-b border-gray-200/50">
+        <div className="flex justify-between items-center max-w-md mx-auto">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-plant-green to-plant-green-dark rounded-full flex items-center justify-center">
+              <Leaf className="h-5 w-5 text-white" />
+            </div>
+            <h1 className="text-2xl font-light text-gray-800">PlantID</h1>
+          </div>
+          
+          <div className="flex items-center space-x-3">
             {usage?.isPremium ? (
-              <span className="text-sm text-yellow-600 flex items-center">
-                <Crown className="h-4 w-4 mr-1" />
+              <span className="text-sm text-yellow-600 flex items-center bg-yellow-50 px-2 py-1 rounded-full">
+                <Crown className="h-3 w-3 mr-1" />
                 Premium
               </span>
             ) : (
-              <span className="text-sm text-gray-600">
-                Free: {usage?.remainingFree ?? 3}/3 left
+              <span className="text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                {usage?.remainingFree ?? 3}/3 left
               </span>
             )}
+            
             <button 
               onClick={() => setLocation('/paywall')}
-              className="text-plant-green hover:text-plant-green-dark transition-colors"
+              className="w-8 h-8 rounded-full bg-plant-green/10 flex items-center justify-center hover:bg-plant-green/20 transition-colors"
             >
-              <Crown className="h-5 w-5" />
+              <Crown className="h-4 w-4 text-plant-green" />
             </button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="p-4 space-y-6">
+      <main className="max-w-md mx-auto px-6 py-8">
         {/* Hero Section */}
-        <div className="text-center py-8">
-          <div className="w-24 h-24 bg-plant-green-light rounded-full flex items-center justify-center mx-auto mb-4">
-            <Leaf className="h-12 w-12 text-plant-green" />
+        <div className="text-center py-12">
+          <div className="relative mb-8">
+            <div className="w-32 h-32 bg-gradient-to-br from-plant-green to-plant-green-dark rounded-full flex items-center justify-center mx-auto shadow-lg shadow-plant-green/20">
+              <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center">
+                  <Leaf className="h-12 w-12 text-white" />
+                </div>
+              </div>
+            </div>
+            <div className="absolute inset-0 w-32 h-32 mx-auto rounded-full bg-plant-green/20 animate-pulse"></div>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Identify Any Plant</h2>
-          <p className="text-gray-600 text-sm">Take a photo or upload an image to discover plant species instantly</p>
+          
+          <h2 className="text-3xl font-light text-gray-800 mb-3">Identify Any Plant</h2>
+          <p className="text-gray-500 text-lg font-light leading-relaxed max-w-sm mx-auto">
+            Take a photo or upload an image to discover plant species instantly
+          </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Button 
-            className="w-full bg-plant-green hover:bg-plant-green-dark text-white font-medium py-4 h-auto"
+            className="w-full bg-gradient-to-r from-plant-green to-plant-green-dark hover:from-plant-green-dark hover:to-plant-green text-white font-medium py-6 h-auto rounded-2xl shadow-lg shadow-plant-green/25 border-0"
             onClick={() => setShowCamera(true)}
             disabled={!canIdentify}
           >
-            <Camera className="mr-2 h-5 w-5" />
+            <Camera className="mr-3 h-6 w-6" />
             Take Photo
           </Button>
           
           <div className="relative">
             <Button 
-              className="w-full border-2 border-plant-green text-plant-green hover:bg-plant-green-light font-medium py-4 h-auto bg-white"
+              className="w-full border-2 border-plant-green/30 text-plant-green hover:bg-plant-green/5 font-medium py-6 h-auto bg-white/70 rounded-2xl shadow-sm"
               disabled={!canIdentify}
             >
-              <Upload className="mr-2 h-5 w-5" />
+              <Upload className="mr-3 h-6 w-6" />
               Upload Photo
             </Button>
             <input
@@ -129,35 +146,44 @@ export default function Home() {
           </div>
 
           {!canIdentify && (
-            <p className="text-center text-sm text-red-600 mt-2">
-              You've used all 3 free identifications. <button 
+            <div className="text-center py-4 bg-red-50 rounded-2xl border border-red-100">
+              <p className="text-red-600 font-medium mb-2">Free identifications used</p>
+              <button 
                 onClick={() => setLocation('/paywall')}
-                className="text-plant-green hover:underline"
+                className="text-plant-green hover:text-plant-green-dark font-medium underline"
               >
-                Upgrade to premium
-              </button> for unlimited access.
-            </p>
+                Upgrade to premium for unlimited access
+              </button>
+            </div>
           )}
         </div>
 
         {/* Recent Identifications */}
         {recentIdentifications.length > 0 && (
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Identifications</h3>
+          <div className="mt-12">
+            <h3 className="text-xl font-light text-gray-700 mb-6 text-center">Recent Identifications</h3>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recentIdentifications.map((item) => (
-                <Card key={item.id} className="p-3">
-                  <div className="flex items-center space-x-3">
+                <Card key={item.id} className="p-4 bg-white/70 border-0 shadow-sm rounded-2xl">
+                  <div className="flex items-center space-x-4">
                     <img 
                       src={item.imageUrl} 
                       alt={item.commonName}
-                      className="w-12 h-12 rounded-lg object-cover"
+                      className="w-16 h-16 rounded-xl object-cover shadow-md"
                     />
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{item.scientificName}</h4>
-                      <p className="text-sm text-gray-600">{item.commonName}</p>
-                      <p className="text-xs text-gray-500">{item.confidence}% confidence</p>
+                      <h4 className="font-medium text-gray-800 text-lg">{item.scientificName}</h4>
+                      <p className="text-gray-600 font-light">{item.commonName}</p>
+                      <div className="flex items-center mt-2">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mr-3">
+                          <div 
+                            className="bg-plant-green h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${item.confidence}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-500 font-medium">{item.confidence}%</span>
+                      </div>
                     </div>
                   </div>
                 </Card>
