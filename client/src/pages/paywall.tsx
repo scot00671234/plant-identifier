@@ -47,7 +47,7 @@ export default function Paywall() {
       const data = await response.json();
       
       if (data.error) {
-        alert(data.error);
+        alert(`Stripe Error: ${data.error}\n\nFor now, you can use the "Test Premium" button below to try unlimited features.`);
         return;
       }
       
