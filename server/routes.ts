@@ -230,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "User ID is required" });
       }
 
-      const usage = await storage.getUserUsage(userId);
+      let usage = await storage.getUserUsage(userId);
       
       // Check if user already has a subscription
       if (usage?.stripeSubscriptionId) {
@@ -255,34 +255,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (usage) {
           await storage.updateStripeCustomerId(userId, customerId);
+        } else {
+          // Create new user usage record with customer ID
+          usage = await storage.createUserUsage({
+            userId,
+            totalCount: 0,
+            isPremium: false,
+            stripeCustomerId: customerId,
+          });
         }
       }
+
+      // Create product first
+      const product = await stripe.products.create({
+        name: 'PlantID Premium',
+        description: 'Unlimited plant identifications',
+      });
+
+      // Create price for the product
+      const price = await stripe.prices.create({
+        currency: 'usd',
+        unit_amount: 499, // $4.99 per month
+        recurring: {
+          interval: 'month',
+        },
+        product: product.id,
+      });
 
       // Create subscription
       const subscription = await stripe.subscriptions.create({
         customer: customerId,
         items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'PlantID Premium',
-              description: 'Unlimited plant identifications',
-            },
-            unit_amount: 499, // $4.99 per month
-            recurring: {
-              interval: 'month',
-            },
-          },
+          price: price.id,
         }],
         payment_behavior: 'default_incomplete',
+        payment_settings: {
+          payment_method_types: ['card'],
+          save_default_payment_method: 'on_subscription',
+        },
         expand: ['latest_invoice.payment_intent'],
       });
 
       // Update user with subscription info
-      await storage.updateUserStripeInfo(userId, {
-        customerId,
-        subscriptionId: subscription.id,
-      });
+      if (usage) {
+        await storage.updateUserStripeInfo(userId, {
+          customerId,
+          subscriptionId: subscription.id,
+        });
+      } else {
+        // Create new user usage record with subscription info
+        await storage.createUserUsage({
+          userId,
+          totalCount: 0,
+          isPremium: false,
+          stripeCustomerId: customerId,
+          stripeSubscriptionId: subscription.id,
+        });
+      }
 
       res.json({
         subscriptionId: subscription.id,
