@@ -109,7 +109,7 @@ export default function Home() {
             <div className="w-32 h-32 bg-gradient-to-br from-plant-green to-plant-green-dark rounded-full flex items-center justify-center mx-auto shadow-lg shadow-plant-green/20">
               <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center">
                 <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center">
-                  <Leaf className="h-16 w-16 text-white" />
+                  <div className="text-6xl">🍃</div>
                 </div>
               </div>
             </div>
