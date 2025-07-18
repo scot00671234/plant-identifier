@@ -109,8 +109,37 @@ export default function Home() {
             <div className="w-32 h-32 bg-gradient-to-br from-plant-green to-plant-green-dark rounded-full flex items-center justify-center mx-auto shadow-lg shadow-plant-green/20">
               <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center">
                 <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center">
-                  {/* Simple, clear plant icon */}
-                  <div className="text-white text-4xl font-bold">🌱</div>
+                  {/* Minimalist leaf icon */}
+                  <svg 
+                    className="w-14 h-14 text-white" 
+                    viewBox="0 0 100 100" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path 
+                      d="M20 80 C20 50, 30 30, 50 20 C70 30, 80 50, 80 80 C80 85, 75 90, 70 90 L30 90 C25 90, 20 85, 20 80 Z"
+                      fill="white"
+                      fillOpacity="0.9"
+                    />
+                    <path 
+                      d="M50 20 L50 90"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeOpacity="0.8"
+                    />
+                    <path 
+                      d="M50 35 Q40 40, 30 45"
+                      stroke="white"
+                      strokeWidth="1.5"
+                      strokeOpacity="0.6"
+                    />
+                    <path 
+                      d="M50 50 Q60 55, 70 60"
+                      stroke="white"
+                      strokeWidth="1.5"
+                      strokeOpacity="0.6"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>
