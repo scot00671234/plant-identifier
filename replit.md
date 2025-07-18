@@ -83,7 +83,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Environment Configuration
 - **Database**: PostgreSQL connection via `DATABASE_URL`
-- **API Keys**: Plant.id API key via environment variables
+- **Stripe Keys**: Secure API key management via environment variables
+  - Development: Test keys (sk_test_... / pk_test_...)
+  - Production: Live keys (sk_live_... / pk_live_...)
+- **Security**: Never hardcode sensitive keys in codebase
 - **Development**: Hot reload with Vite middleware
 - **Production**: Static file serving with Express
 
@@ -137,3 +140,5 @@ The application follows a modern full-stack architecture with emphasis on type s
 - **Error Handling**: Improved error messages and debug information for subscription system
 - **Environment Setup**: Added proper environment variable configuration for Stripe keys
 - **Cache Management**: Implemented proper query invalidation for instant UI updates
+- **UI Cleanup**: Removed unwanted premium features (Detailed Plant Care, History Backup) and monthly limits
+- **Security Ready**: App configured for secure production deployment with environment variables
