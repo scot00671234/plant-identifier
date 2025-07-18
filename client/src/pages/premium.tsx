@@ -19,20 +19,12 @@ export default function Premium() {
 
   const features = [
     {
-      title: "100 Monthly Identifications",
-      description: "Generous monthly limit that resets every month - perfect for enthusiasts"
+      title: "Unlimited Identifications",
+      description: "Identify as many plants as you want with no limits"
     },
     {
       title: "Priority AI Processing",
       description: "Access to our most advanced AI models for higher accuracy"
-    },
-    {
-      title: "Detailed Plant Care",
-      description: "Get comprehensive plant care guides and growing tips"
-    },
-    {
-      title: "History Backup",
-      description: "Never lose your plant identifications with cloud backup"
     }
   ];
 
@@ -109,25 +101,10 @@ export default function Premium() {
             Premium Active
           </h2>
           <p className="text-gray-500 text-lg font-light leading-relaxed">
-            You have 100 monthly plant identifications and priority features.
+            You have unlimited plant identifications and priority features.
           </p>
           
-          {usage?.premiumMonthlyCount !== undefined && (
-            <div className="mt-6 p-4 bg-plant-green/10 rounded-2xl">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-plant-green">This Month</span>
-                <span className="text-sm font-medium text-plant-green">
-                  {usage.premiumMonthlyCount || 0} / 100
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-plant-green h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(((usage.premiumMonthlyCount || 0) / 100) * 100, 100)}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* Subscription Details Card */}
