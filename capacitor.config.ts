@@ -1,14 +1,12 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.yourname.plantid',
-  appName: 'PlantID',
+  appId: 'com.example.plantidentifier_aiplantid',
+  appName: 'Plant Identifier - AI Plant ID',
   webDir: 'dist/public',
   server: {
-    // For development - points to your Replit
-    url: process.env.NODE_ENV === 'development' 
-      ? 'http://localhost:5000' 
-      : undefined
+    // Points to your Vercel deployment
+    url: 'https://plant-identifier-alpha.vercel.app'
   },
   android: {
     allowMixedContent: true
