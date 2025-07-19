@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">PlantID</string>
-    <string name="title_activity_main">PlantID</string>
-    <string name="package_name">com.yourname.plantid</string>
-    <string name="custom_url_scheme">com.yourname.plantid</string>
+    <string name="app_name">Plant Identifier - AI Plant ID</string>
+    <string name="title_activity_main">Plant Identifier - AI Plant ID</string>
+    <string name="package_name">com.example.plantidentifier_aiplantid</string>
+    <string name="custom_url_scheme">com.example.plantidentifier_aiplantid</string>
 </resources>

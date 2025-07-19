@@ -1,4 +1,4 @@
-package com.yourname.plantid;
+package com.example.plantidentifier_aiplantid;
 
 import com.getcapacitor.BridgeActivity;
 
